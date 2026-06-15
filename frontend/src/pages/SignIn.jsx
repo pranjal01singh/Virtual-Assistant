@@ -5,6 +5,7 @@ import { IoEyeOff } from "react-icons/io5";
 import { useNavigate } from 'react-router-dom';
 import { userDataContext } from '../context/UserContext';
 import axios from "axios"
+
 function SignIn() {
   const [showPassword,setShowPassword]=useState(false)
   const {serverUrl,userData,setUserData}=useContext(userDataContext)
@@ -32,22 +33,22 @@ try {
 }
     }
   return (
-    <div className='w-full h-[100vh] bg-cover flex justify-center items-center' style={{backgroundImage:`url(${bg})`}} >
- <form className='w-[90%] h-[600px] max-w-[500px] bg-[#00000062] backdrop-blur shadow-lg shadow-black flex flex-col items-center justify-center gap-[20px] px-[20px]' onSubmit={handleSignIn}>
-<h1 className='text-white text-[30px] font-semibold mb-[30px]'>Sign In to <span className='text-blue-400'>Virtual Assistant</span></h1>
+      <div className='w-full min-h-dvh bg-cover bg-no-repeat bg-center flex justify-center items-center px-[16px] py-[24px]' style={{backgroundImage:`url(${bg})`}} >
+ <form className='w-full min-h-[390px] sm:min-h-[520px] max-h-[calc(100dvh-48px)] max-w-[500px] overflow-y-auto bg-[#00000062] backdrop-blur shadow-lg shadow-black flex flex-col items-center justify-center gap-[14px] sm:gap-[20px] px-[20px] sm:px-[24px] py-[28px] sm:py-[36px]' onSubmit={handleSignIn}>
+<h1 className='text-white text-[24px] sm:text-[30px] font-semibold mb-[18px] sm:mb-[30px] text-center leading-tight'>Sign In to <span className='text-blue-400'>Virtual Assistant</span></h1>
 
-<input type="email" placeholder='Email' className='w-full h-[60px] outline-none border-2 border-white bg-transparent  text-white placeholder-gray-300 px-[20px] py-[10px] rounded-full text-[18px]' required onChange={(e)=>setEmail(e.target.value)} value={email}/>
-<div className='w-full h-[60px] border-2 border-white bg-transparent  text-white rounded-full text-[18px] relative'>
-<input type={showPassword?"text":"password"} placeholder='password' className='w-full h-full rounded-full outline-none bg-transparent placeholder-gray-300 px-[20px] py-[10px]' required onChange={(e)=>setPassword(e.target.value)} value={password}/>
-{!showPassword && <IoEye className='absolute top-[18px] right-[20px] w-[25px] h-[25px] text-[white] cursor-pointer' onClick={()=>setShowPassword(true)}/>}
-  {showPassword && <IoEyeOff className='absolute top-[18px] right-[20px] w-[25px] h-[25px] text-[white] cursor-pointer' onClick={()=>setShowPassword(false)}/>}
+<input type="email" placeholder='Email' className='w-full h-[52px] sm:h-[60px] outline-none border-2 border-white bg-transparent  text-white placeholder-gray-300 px-[20px] py-[10px] rounded-full text-[16px] sm:text-[18px]' required onChange={(e)=>setEmail(e.target.value)} value={email}/>
+<div className='w-full h-[52px] sm:h-[60px] border-2 border-white bg-transparent  text-white rounded-full text-[16px] sm:text-[18px] relative'>
+<input type={showPassword?"text":"password"} placeholder='password' className='w-full h-full rounded-full outline-none bg-transparent placeholder-gray-300 px-[20px] py-[10px] pr-[54px]' required onChange={(e)=>setPassword(e.target.value)} value={password}/>
+{!showPassword && <IoEye className='absolute top-1/2 right-[20px] w-[22px] h-[22px] sm:w-[25px] sm:h-[25px] text-[white] cursor-pointer -translate-y-1/2' onClick={()=>setShowPassword(true)}/>}
+  {showPassword && <IoEyeOff className='absolute top-1/2 right-[20px] w-[22px] h-[22px] sm:w-[25px] sm:h-[25px] text-[white] cursor-pointer -translate-y-1/2' onClick={()=>setShowPassword(false)}/>}
 </div>
 {err.length>0 && <p className='text-red-500 text-[17px]'>
   *{err}
   </p>}
-<button className='min-w-[150px] h-[60px] mt-[30px] text-black font-semibold  bg-white rounded-full text-[19px] ' disabled={loading}>{loading?"Loading...":"Sign In"}</button>
+<button className='min-w-[140px] sm:min-w-[150px] h-[52px] sm:h-[60px] mt-[18px] sm:mt-[30px] text-black font-semibold  bg-white rounded-full text-[17px] sm:text-[19px] ' disabled={loading}>{loading?"Loading...":"Sign In"}</button>
 
-<p className='text-[white] text-[18px] cursor-pointer' onClick={()=>navigate("/signup")}>Want to create a new account ? <span className='text-blue-400'>Sign Up</span></p>
+<p className='text-[white] text-[15px] sm:text-[18px] cursor-pointer text-center' onClick={()=>navigate("/signup")}>Want to create a new account ? <span className='text-blue-400'>Sign Up</span></p>
  </form>
     </div>
   )

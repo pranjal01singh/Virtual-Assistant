@@ -11,7 +11,7 @@ function UserContext({children}) {
         try {
             const result=await axios.get(`${serverUrl}/api/user/current`,{withCredentials:true})
             setUserData(result.data)
-            console.log(result.data)
+          
         } catch (error) {
             console.log(error)
         }
@@ -28,6 +28,10 @@ try {
     }
   )
   if(result?.status >= 200 && result?.status < 300){
+    setUserData((prev)=>prev ? {
+      ...prev,
+      history:[...(prev.history || []), command]
+    } : prev)
     return result.data
   }
   return result?.data || {response:"assistant service unavailable", error:"bad_response"}

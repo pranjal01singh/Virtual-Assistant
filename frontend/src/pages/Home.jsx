@@ -26,6 +26,8 @@ function Home() {
   const abortCountRef=useRef(0)
   const lastAbortRef=useRef(0)
   const synth=window.speechSynthesis
+  const historyItems = Array.isArray(userData?.history) ? userData.history : []
+  const latestHistoryItems = [...historyItems].reverse()
 
   const scheduleRecognitionRestart = (delay = 500) => {
     if (restartTimerRef.current) {
@@ -52,6 +54,7 @@ function Home() {
       navigate("/signin")
     } catch (error) {
       setUserData(null)
+      navigate("/signin")
       console.log(error)
     }
   }
@@ -299,8 +302,16 @@ synth.speak(utterence);
         window.open('https://www.instagram.com/', '_blank')
         return true
       },
+      'nreternal-open': () => {
+        window.open('https://nreternaltech.com/', '_blank')
+        return true
+      },
       'facebook-open': () => {
         window.open('https://www.facebook.com/', '_blank')
+        return true
+      },
+      'rdec-open': () => {
+        window.open('https://rdec.ac.in/', '_blank')
         return true
       },
       'weather-show': () => {
@@ -363,7 +374,6 @@ useEffect(() => {
 
   recognitionRef.current = recognition;
 
-  let isMounted = true;  // flag to avoid setState on unmounted component
 
   recognition.onstart = () => {
     isRecognizingRef.current = true;
@@ -458,14 +468,18 @@ useEffect(() => {
 
 
   return () => {
-    isMounted = false;
     shouldListenRef.current = false;
     const restartTimer = restartTimerRef.current;
     if (restartTimer) clearTimeout(restartTimer);
+    synth.cancel();
     if (reservedTabRef.current && !reservedTabRef.current.closed) {
       reservedTabRef.current.close();
     }
-    recognition.stop();
+    try {
+      recognition.stop();
+    } catch (error) {
+      console.log("Recognition cleanup error:", error);
+    }
     setListening(false);
     isRecognizingRef.current = false;
   };
@@ -475,26 +489,42 @@ useEffect(() => {
 
 
   return (
-    <div className='w-full h-[100vh] bg-gradient-to-t from-[black] to-[#02023d] flex justify-center items-center flex-col gap-[15px] overflow-hidden'>
+    <div className='w-full min-h-dvh bg-gradient-to-t from-[black] to-[#02023d] flex justify-center items-center flex-col gap-[15px] overflow-hidden'>
       <CgMenuRight className='lg:hidden text-white absolute top-[20px] right-[20px] w-[25px] h-[25px]' onClick={()=>setHam(true)}/>
-      <div className={`absolute lg:hidden top-0 w-full h-full bg-[#00000053] backdrop-blur-lg p-[20px] flex flex-col gap-[20px] items-start ${ham?"translate-x-0":"translate-x-full"} transition-transform`}>
+      <div className={`fixed lg:hidden inset-0 z-50 w-full min-h-dvh bg-[#000000d9] backdrop-blur-lg p-[20px] flex flex-col gap-[18px] items-start overflow-hidden ${ham?"translate-x-0":"translate-x-full"} transition-transform duration-300`}>
  <RxCross1 className=' text-white absolute top-[20px] right-[20px] w-[25px] h-[25px]' onClick={()=>setHam(false)}/>
- <button className='min-w-[150px] h-[60px]  text-black font-semibold   bg-white rounded-full cursor-pointer text-[19px] ' onClick={handleLogOut}>Log Out</button>
-      <button className='min-w-[150px] h-[60px]  text-black font-semibold  bg-white  rounded-full cursor-pointer text-[19px] px-[20px] py-[10px] ' onClick={()=>navigate("/customize")}>Customize your Assistant</button>
+ <button className='min-w-[130px] h-[48px] sm:min-w-[150px] sm:h-[60px] text-black font-semibold bg-white rounded-full cursor-pointer text-[15px] sm:text-[19px] ' onClick={handleLogOut}>Log Out</button>
+      <button className='min-w-[180px] h-[48px] sm:min-w-[150px] sm:h-[60px] text-black font-semibold  bg-white  rounded-full cursor-pointer text-[15px] sm:text-[19px] px-[18px] sm:px-[20px] py-[10px] ' onClick={()=>navigate("/customize")}>Customize your Assistant</button>
 
 <div className='w-full h-[2px] bg-gray-400'></div>
-<h1 className='text-white font-semibold text-[19px]'>History</h1>
+<h1 className='text-white font-semibold text-[22px]'>History</h1>
 
-<div className='w-full h-[400px] gap-[20px] overflow-y-auto flex flex-col truncate'>
-  {userData.history?.map((his,idx)=>(
-    <div key={`${his}-${idx}`} className='text-gray-200 text-[18px] w-full h-[30px]  '>{his}</div>
+<div className='w-full flex-1 min-h-0 gap-[14px] overflow-y-auto pr-[8px] flex flex-col'>
+  {latestHistoryItems.map((his,idx)=>(
+    <div key={`${his}-${idx}`} className='text-gray-200 text-[16px] sm:text-[18px] w-full leading-snug break-words'>{his}</div>
   ))}
+  {!latestHistoryItems.length && (
+    <div className='text-gray-300 text-[16px]'>No history yet</div>
+  )}
 
 </div>
 
       </div>
       <button className='min-w-[150px] h-[60px] mt-[30px] text-black font-semibold absolute hidden lg:block top-[20px] right-[20px]  bg-white rounded-full cursor-pointer text-[19px] ' onClick={handleLogOut}>Log Out</button>
       <button className='min-w-[150px] h-[60px] mt-[30px] text-black font-semibold  bg-white absolute top-[100px] right-[20px] rounded-full cursor-pointer text-[19px] px-[20px] py-[10px] hidden lg:block ' onClick={()=>navigate("/customize")}>Customize your Assistant</button>
+      <div className='hidden lg:flex fixed top-[260px] right-[24px] bottom-[24px] w-[300px] xl:w-[360px] 2xl:w-[420px] bg-[#00000070] backdrop-blur-lg rounded-2xl p-[20px] flex-col gap-[14px] shadow-lg shadow-black/30'>
+        <h1 className='text-white font-semibold text-[22px]'>History</h1>
+        <div className='w-full h-[2px] bg-gray-400'></div>
+        <div className='w-full flex-1 min-h-0 gap-[12px] overflow-y-auto pr-[6px] flex flex-col'>
+          {latestHistoryItems.length ? (
+            latestHistoryItems.map((his,idx)=>(
+              <div key={`${his}-${idx}`} className='text-gray-200 text-[16px] leading-snug w-full break-words'>{his}</div>
+            ))
+          ) : (
+            <div className='text-gray-300 text-[16px]'>No history yet</div>
+          )}
+        </div>
+      </div>
       <div className='w-[300px] h-[400px] flex justify-center items-center overflow-hidden rounded-4xl shadow-lg'>
 <img src={userData?.assistantImage} alt="" className='h-full object-cover'/>
       </div>

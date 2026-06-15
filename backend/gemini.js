@@ -23,7 +23,7 @@ You are not Google. You will now behave like a voice-enabled assistant.
 Your task is to understand the user's natural language input and respond with a JSON object like this:
 
 {
-  "type": "general" | "google-search" | "youtube-search" | "youtube-play" | "get-time" | "get-date" | "get-day" | "get-month" | "calculator-open" | "instagram-open" | "facebook-open" | "weather-show" | "open-url" | "open-new-tab" | "unsupported",
+  "type": "general" | "google-search" | "youtube-search" | "youtube-play" | "get-time" | "get-date" | "get-day" | "get-month" | "calculator-open" | "instagram-open" | "nreternal-open" |"facebook-open" |"rdec-open" | "weather-show" | "open-url" | "open-new-tab"  |"unsupported",
   "userInput": "<original user input>",
   "response": "<a short spoken response to read out loud to the user>",
   "query": "<search query if needed>",
@@ -46,7 +46,9 @@ Type meanings:
 - "youtube-play": play video
 - "calculator-open": open calculator
 - "instagram-open": open instagram
+- "nreternal-open": open nr eternal technologies
 - "facebook-open": open facebook
+- "rdec-open": open rdec
 - "weather-show": weather
 - "get-time": current time
 - "get-date": today's date
