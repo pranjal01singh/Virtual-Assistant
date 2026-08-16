@@ -3,10 +3,10 @@ import { askToAssistant, getCurrentUser, updateAssistant } from "../controllers/
 import isAuth from "../middlewares/isAuth.js"
 import upload from "../middlewares/multer.js"
 
-const userRouter=express.Router()
+const userRouter = express.Router()
 
-userRouter.get("/current",isAuth,getCurrentUser)
-userRouter.post("/update",isAuth,upload.single("assistantImage"),updateAssistant)
-userRouter.post("/asktoassistant",isAuth,askToAssistant)
+userRouter.get("/current", getCurrentUser)
+userRouter.post("/update", isAuth, upload.single("assistantImage"), updateAssistant)
+userRouter.post("/asktoassistant", isAuth, askToAssistant)
 
 export default userRouter

@@ -1,61 +1,68 @@
- import uploadOnCloudinary from "../config/cloudinary.js"
+import uploadOnCloudinary from "../config/cloudinary.js"
 import geminiResponse from "../gemini.js"
 import User from "../models/user.model.js"
 import moment from "moment"
- export const getCurrentUser=async (req,res)=>{
-    try {
-        const userId=req.userId
-        const user=await User.findById(userId).select("-password")
-        if(!user){
-return res.status(400).json({message:"user not found"})
-        }
+import jwt from "jsonwebtoken"
 
-   return res.status(200).json(user)     
-    } catch (error) {
-       return res.status(400).json({message:"get current user error"}) 
-    }
-}
-
-export const updateAssistant=async (req,res)=>{
+export const getCurrentUser = async (req, res) => {
    try {
-      const {assistantName,imageUrl}=req.body
-      let assistantImage;
-if(req.file){
-   assistantImage=await uploadOnCloudinary(req.file.path)
-}else{
-   assistantImage=imageUrl
+      const token = req.cookies.token
+      if (!token) {
+         return res.status(200).json(null)
+      }
+      const verifyToken = await jwt.verify(token, process.env.JWT_SECRET)
+      const userId = verifyToken.userId
+      const user = await User.findById(userId).select("-password")
+      if (!user) {
+         return res.status(200).json(null)
+      }
+
+      return res.status(200).json(user)
+   } catch (error) {
+      return res.status(200).json(null)
+   }
 }
 
-const user=await User.findByIdAndUpdate(req.userId,{
-   assistantName,assistantImage
-},{new:true}).select("-password")
-return res.status(200).json(user)
+export const updateAssistant = async (req, res) => {
+   try {
+      const { assistantName, imageUrl } = req.body
+      let assistantImage;
+      if (req.file) {
+         assistantImage = await uploadOnCloudinary(req.file.path)
+      } else {
+         assistantImage = imageUrl
+      }
 
-      
+      const user = await User.findByIdAndUpdate(req.userId, {
+         assistantName, assistantImage
+      }, { new: true }).select("-password")
+      return res.status(200).json(user)
+
+
    } catch (error) {
-       return res.status(400).json({message:"updateAssistantError user error"}) 
+      return res.status(400).json({ message: "updateAssistantError user error" })
    }
 }
 
 
-export const askToAssistant=async (req,res)=>{
+export const askToAssistant = async (req, res) => {
    try {
-      const {command}=req.body
-      const user=await User.findById(req.userId);
+      const { command } = req.body
+      const user = await User.findById(req.userId);
       user.history.push(command)
       await user.save()
-      const userName=user.name
-      const assistantName=user.assistantName
+      const userName = user.name
+      const assistantName = user.assistantName
       let result
       try {
-         result=await geminiResponse(command,assistantName,userName)
+         result = await geminiResponse(command, assistantName, userName)
       } catch (e) {
          const detail = e?.message || "unknown error"
-         return res.status(502).json({response:`assistant service unavailable: ${detail}`, error: detail})
+         return res.status(502).json({ response: `assistant service unavailable: ${detail}`, error: detail })
       }
 
-      if(!result || typeof result!=="string"){
-         return res.status(502).json({response:"assistant service unavailable, please try again"})
+      if (!result || typeof result !== "string") {
+         return res.status(502).json({ response: "assistant service unavailable, please try again" })
       }
 
       const commandText = (command || "").trim()
@@ -103,13 +110,13 @@ export const askToAssistant=async (req,res)=>{
          gemResult = JSON.parse(rawText)
       } catch (e) {
          const jsonMatch = rawText.match(/{[\s\S]*}/)
-         if(!jsonMatch){
-            return res.status(400).json({response:"sorry, i can't understand"})
+         if (!jsonMatch) {
+            return res.status(400).json({ response: "sorry, i can't understand" })
          }
          try {
-            gemResult=JSON.parse(jsonMatch[0])
+            gemResult = JSON.parse(jsonMatch[0])
          } catch (err) {
-            return res.status(400).json({response:"sorry, i can't understand"})
+            return res.status(400).json({ response: "sorry, i can't understand" })
          }
       }
       console.log(gemResult)
@@ -130,38 +137,38 @@ export const askToAssistant=async (req,res)=>{
          text: normalizedText
       }
 
-      switch(type){
-         case 'get-date' :
+      switch (type) {
+         case 'get-date':
             return res.json({
                ...payload,
-               response:`current date is ${moment().format("YYYY-MM-DD")}`
+               response: `current date is ${moment().format("YYYY-MM-DD")}`
             });
-            case 'get-time':
-                return res.json({
+         case 'get-time':
+            return res.json({
                ...payload,
-               response:`current time is ${moment().format("hh:mm A")}`
+               response: `current time is ${moment().format("hh:mm A")}`
             });
-             case 'get-day':
-                return res.json({
+         case 'get-day':
+            return res.json({
                ...payload,
-               response:`today is ${moment().format("dddd")}`
+               response: `today is ${moment().format("dddd")}`
             });
-            case 'get-month':
-                return res.json({
+         case 'get-month':
+            return res.json({
                ...payload,
-               response:`today is ${moment().format("MMMM")}`
+               response: `today is ${moment().format("MMMM")}`
             });
          case 'unsupported':
             return res.json({
                ...payload,
                response: 'sorry i unable to do it'
             });
-      default:
-         return res.json(payload)
+         default:
+            return res.json(payload)
       }
-     
+
 
    } catch (error) {
-  return res.status(500).json({ response: "ask assistant error" })
+      return res.status(500).json({ response: "ask assistant error" })
    }
 }
