@@ -1,4 +1,5 @@
 {
+  "name":"Virtual-Assistant",
   "version": 2,
   "builds": [
     {
