@@ -8,7 +8,24 @@ import Home from './pages/Home'
 import Customize2 from './pages/Customize2'
 
 function App() {
-  const {userData}=useContext(userDataContext)
+  const {userData, loading}=useContext(userDataContext)
+
+  // Jab tak auth check ho raha hai, kuch mat dikhao (premature redirect avoid)
+  if(loading){
+    return (
+      <div style={{
+        width:"100vw",
+        height:"100dvh",
+        background:"linear-gradient(to top, black, #02023d)",
+        display:"flex",
+        justifyContent:"center",
+        alignItems:"center"
+      }}>
+        <div style={{color:"white", fontSize:"18px", opacity:0.7}}>Loading...</div>
+      </div>
+    )
+  }
+
   return (
    <Routes>
      <Route path='/' element={(userData?.assistantImage && userData?.assistantName)? <Home/> :<Navigate to={"/customize"}/>}/>
