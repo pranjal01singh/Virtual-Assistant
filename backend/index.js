@@ -54,3 +54,4 @@ app.listen(port, () => {
     console.log("server started")
 })
 
+export default app
