@@ -23,8 +23,6 @@ import cookieParser from "cookie-parser"
 import userRouter from "./routes/user.routes.js"
 
 
-connectDb()
-
 const app = express()
 const allowedOrigins = (process.env.CLIENT_ORIGINS || "")
     .split(",")
@@ -47,6 +45,17 @@ app.use(cors({
 const port = process.env.PORT || 5000
 app.use(express.json())
 app.use(cookieParser())
+
+// Serverless-safe DB connection middleware
+app.use(async (req, res, next) => {
+    try {
+        await connectDb()
+        next()
+    } catch (err) {
+        res.status(500).json({ message: "Database connection failed" })
+    }
+})
+
 app.use("/api/auth", authRouter)
 app.use("/api/user", userRouter)
 
