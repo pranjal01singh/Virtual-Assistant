@@ -23,6 +23,8 @@ import cookieParser from "cookie-parser"
 import userRouter from "./routes/user.routes.js"
 
 
+connectDb()
+
 const app = express()
 const allowedOrigins = (process.env.CLIENT_ORIGINS || "")
     .split(",")
@@ -50,7 +52,6 @@ app.use("/api/user", userRouter)
 
 
 app.listen(port, () => {
-    connectDb()
     console.log("server started")
 })
 
